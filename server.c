@@ -140,7 +140,7 @@ int main(int argc , char *argv[]){
                         confirm=0;
                         
                     }else{
-                        write(client_sock,machineError,strlen(machineError)+1);
+                        //write(client_sock,machineError,strlen(machineError)+1);
                         close(client_sock);
                     }
                     
@@ -170,6 +170,8 @@ int main(int argc , char *argv[]){
                                         fprintf(inventFile,"%s",invent);
                                         fseek(inventFile,1,SEEK_CUR);
                                         printf("Delivery....\n");
+                                        sprintf(client_message,"increase 10 %s in %s\n",branch,machine);
+                                        send(client_sock,client_message,strlen(client_message),0);
                                         sleep(5);
                                         printf("Done!......\n");
                                         break;
