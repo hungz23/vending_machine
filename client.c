@@ -17,6 +17,7 @@ int main(int argc , char *argv[]){
     char message[64];
     char reply[64];
     char success[]="Successfully!";
+    char machineError[]="Wrong Machine";
     //Create socket
     sock = socket(AF_INET , SOCK_STREAM , 0);
     if (sock == -1)
@@ -52,8 +53,8 @@ int main(int argc , char *argv[]){
             puts("recv failed");
             break;
         }
-        if(strcmp(reply,success)!=0){
-            printf("Machine error!\n");
+        if(strcmp(reply,machineError)==0){
+            puts(reply);
             break;
         }
         puts(reply);

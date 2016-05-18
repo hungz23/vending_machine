@@ -112,8 +112,8 @@ int main(int argc , char *argv[]){
                     }
 
                     while(!feof(inventFile)){
-                        fgets(info,2000,inventFile);
-                        machine=strtok(info,",");printf("machine:%s\n",machine);
+                        fgets(info,2000,inventFile);puts(info);
+                        machine=strtok(info,",");
                         branch=strtok(NULL,",");
                         amount=strtok(NULL,"\n ");number=atoi(amount);number--;
                         
@@ -124,7 +124,9 @@ int main(int argc , char *argv[]){
                         }
                     }
                     
-                    
+                    if(confirm==0){
+                        write(client_sock,machineError,strlen(machineError)+1);
+                    }
                     if(confirm==1){
                         //update database
                         sprintf(invent,"%d",number);
@@ -139,9 +141,6 @@ int main(int argc , char *argv[]){
                         }
                         confirm=0;
                         
-                    }else{
-                        //write(client_sock,machineError,strlen(machineError)+1);
-                        close(client_sock);
                     }
                     
                     if((historyFile=fopen("history.txt","r+"))==NULL){
@@ -155,9 +154,9 @@ int main(int argc , char *argv[]){
                         fclose(historyFile);
                         fseek(inventFile,0,SEEK_SET);
                      while(1){
-                        fgets(info,2000,inventFile);
+                        fgets(info,2000,inventFile);puts(info);
                         if(feof(inventFile)) break;
-                        machine=strtok(info,",");printf("machine:%s\n",machine);
+                        machine=strtok(info,",");
                         branch=strtok(NULL,",");
                         amount=strtok(NULL,"\n ");number=atoi(amount);
                         
