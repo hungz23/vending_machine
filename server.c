@@ -116,10 +116,9 @@ int main(int argc , char *argv[]){
                             break;
                         }
                     }
-                    if(confirm==0){
-                         write(client_sock,machineError,strlen(machineError)+1);
-                         confirm=0;
-                    }else{
+                    
+                    
+                    if(confirm==1){
                         //update database
                         sprintf(invent,"%d",number);
                         fseek(inventFile,-4,SEEK_CUR);
@@ -131,6 +130,7 @@ int main(int argc , char *argv[]){
                                     break;
                                 }
                         }
+                        confirm=0;
                         
                     }
                     
@@ -138,11 +138,12 @@ int main(int argc , char *argv[]){
                         perror("can't write in file");
                     }
                     //write history
-                    tm = *localtime(&t);
-                    fseek(historyFile,0,SEEK_END);
-                    fprintf(historyFile,"%s\t%s\t%d-%d-%d %d:%d:%d\n",machineName,branchName,  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-                    fclose(historyFile);
-
+                    
+                        tm = *localtime(&t);
+                        fseek(historyFile,0,SEEK_END);
+                        fprintf(historyFile,"%s\t%s\t%d-%d-%d %d:%d:%d\n",machineName,branchName,  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+                        fclose(historyFile);
+                    
                     fclose(inventFile);
 
                     if(read_size == 0){
