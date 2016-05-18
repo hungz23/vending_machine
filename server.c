@@ -18,12 +18,8 @@ typedef struct Inventory_t{
 
 
 void initInventFile();
-void decreaseInventory(FILE *inventFile, char* machineName, char* branchName);
-void increaseInventory(FILE*inventFile, char *machineName, char* branchName);
-//int searchInventory(FILE*inventFile, char* machineName, char* branchName);
-void addHistory(FILE* historyFile, char* machineName, char* branchName);
+void waitFor (unsigned int secs);
 
-int testMachineName(FILE*inventFile,char*machineName,char*branchName);
 int main(int argc , char *argv[]){
     int socket_desc , client_sock , c , read_size, confirm=0;
     int counter;
@@ -36,6 +32,8 @@ int main(int argc , char *argv[]){
     Inventory* inventory;
     char back=8,character;
     char invent[4];
+
+    unsigned int secs=5;
 
     time_t t = time(NULL);
     struct tm tm;
@@ -73,6 +71,15 @@ int main(int argc , char *argv[]){
     puts("Waiting for incoming connections...");
     c = sizeof(struct sockaddr_in);
     int pid;
+
+    //test
+    
+    if((inventFile=fopen("inventory.txt","r+"))==NULL){
+          perror("error:");
+    }
+   
+        fclose(inventFile);
+    //test
      
     //accept connection from an incoming client
     for(;;){
@@ -92,7 +99,7 @@ int main(int argc , char *argv[]){
                     return 1;
                 }
                 puts("Connection accepted");
-
+                
                 //read from socket
                 for(;;){
                     read_size = recv(client_sock , client_message , 32 , 0);
@@ -101,7 +108,7 @@ int main(int argc , char *argv[]){
                     puts("hung");
 
                     if((inventFile=fopen("inventory.txt","r+"))==NULL){
-                        initInventFile();
+                        perror("No database!\n");
                     }
 
                     while(!feof(inventFile)){
@@ -132,6 +139,9 @@ int main(int argc , char *argv[]){
                         }
                         confirm=0;
                         
+                    }else{
+                        write(client_sock,machineError,strlen(machineError)+1);
+                        close(client_sock);
                     }
                     
                     if((historyFile=fopen("history.txt","r+"))==NULL){
@@ -143,6 +153,32 @@ int main(int argc , char *argv[]){
                         fseek(historyFile,0,SEEK_END);
                         fprintf(historyFile,"%s\t%s\t%d-%d-%d %d:%d:%d\n",machineName,branchName,  tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
                         fclose(historyFile);
+                        fseek(inventFile,0,SEEK_SET);
+                     while(1){
+                        fgets(info,2000,inventFile);
+                        if(feof(inventFile)) break;
+                        machine=strtok(info,",");printf("machine:%s\n",machine);
+                        branch=strtok(NULL,",");
+                        amount=strtok(NULL,"\n ");number=atoi(amount);
+                        
+                        if(number<=3){
+                            sprintf(invent,"%d",number+10);
+                            fseek(inventFile,-4,SEEK_CUR);
+                            while((character=fgetc(inventFile))!='\n'){
+                                    if(isdigit((int)character)){
+                                        fseek(inventFile,-1,SEEK_CUR);
+                                        fprintf(inventFile,"%s",invent);
+                                        fseek(inventFile,1,SEEK_CUR);
+                                        printf("Delivery....\n");
+                                        sleep(5);
+                                        printf("Done!......\n");
+                                        break;
+                                    }
+                            }
+                        }
+                    }
+
+                   
                     
                     fclose(inventFile);
 
@@ -165,24 +201,7 @@ int main(int argc , char *argv[]){
     return 0;
 }
 
-void initInventFile(){
-    FILE*inventFile=fopen("inventory.txt","w+");
-    if(inventFile==NULL){
-        perror("can't make file");
-    }
-    Inventory inventory;
-
-    int choice=1;
-    while(choice!=0){
-        printf("1. Nhap lieu\n0. Thoat\n");
-        printf("Nhap lua chon:");scanf("%d",&choice);
-        if(choice==1){
-            printf("Nhap ten may:");scanf("%s",inventory.machineName);
-            printf("Nhap ten san pham:");scanf("%s",inventory.branchName);
-            printf("Nhap so luong:");scanf("%d",&inventory.amount);
-            fwrite(&inventory,sizeof(Inventory),1,inventFile);
-        }
-    }
-    fclose(inventFile);
+void waitFor (unsigned int secs) {
+    unsigned int retTime = time(0) + secs;   // Get finishing time.
+    while (time(0) < retTime);               // Loop until it arrives.
 }
-

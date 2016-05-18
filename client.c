@@ -12,7 +12,8 @@ char* getMachineName();
 int main(int argc , char *argv[]){
     int sock,equipMain;
     struct sockaddr_in server;
-    char *branchName , *machineName; char *server_reply=(char*)malloc(2000*sizeof(char));
+    char *branchName , *machineName; 
+    char server_reply[2000];
     char message[64];
     char reply[64];
     char success[]="Successfully!";
@@ -37,7 +38,7 @@ int main(int argc , char *argv[]){
     puts("Connected\n");
      
     //keep communicating with server
-    //for(;;){
+    for(;;){
         branchName=getBranchName();strcpy(message,branchName);
         machineName=getMachineName(); strcat(message,",");
         strcat(message,machineName);strcat(message,"\n");
@@ -49,29 +50,29 @@ int main(int argc , char *argv[]){
         //Receive a reply from the server
         if( recv(sock , reply , 2000 , 0) < 0){
             puts("recv failed");
-            //break;
+            break;
         }
         if(strcmp(reply,success)!=0){
             printf("Machine error!\n");
-            exit(1);
+            break;
         }
         puts(reply);
-    //}
+    }
         close(sock);
      
       return 0;
 }
 
 char* getBranchName(){
-    char*branch; 
-    branch = (char*)malloc(32*sizeof(char));
+    char* branch;
+    branch=(char*)malloc(32*sizeof(char));
     printf("Enter Branch Name: ");
     scanf("%s" , branch);
     return branch;
 }
 char* getMachineName(){
-    char* machineName; 
-    machineName = (char*)malloc(32*sizeof(char));
+    char* machineName;
+    machineName=(char*)malloc(32*sizeof(char)); 
     printf("Enter Machine Name:");
     scanf("%s", machineName);
     return machineName;

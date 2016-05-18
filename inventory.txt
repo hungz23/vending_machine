@@ -1,4 +1,4 @@
-may1,Coca,9  
+may1,Coca,5 
 may1,Pepsi,41
-may2,Coca,8 
-may2,Pepsi,11
+may2,Coca,12
+may2,Pepsi,10
